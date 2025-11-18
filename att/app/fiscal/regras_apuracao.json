@@ -1,0 +1,237 @@
+[
+    {
+        "id": "total_contabil_entradas",
+        "label": "Total Contabil Entradas",
+        "tipo": "soma_df",
+        "tipo_df": "entradas",
+        "coluna": "Total Operação",
+        "operacao": "total"
+    },
+    {
+        "id": "total_base_icms_entradas",
+        "label": "Total Base ICMS Entradas",
+        "tipo": "soma_df",
+        "tipo_df": "entradas",
+        "coluna": "Base de Cálculo ICMS",
+        "operacao": "total"
+    },
+    {
+        "id": "total_credito_icms",
+        "label": "Total Credito ICMS",
+        "tipo": "soma_df",
+        "tipo_df": "entradas",
+        "coluna": "Total ICMS",
+        "operacao": "total"
+    },
+    {
+        "id": "total_credito_ipi",
+        "label": "Total Credito IPI",
+        "tipo": "soma_df",
+        "tipo_df": "entradas",
+        "coluna": "Total IPI",
+        "operacao": "total"
+    },
+    {
+        "id": "total_base_st_entradas",
+        "label": "Total Base ST Entradas",
+        "tipo": "soma_df",
+        "tipo_df": "entradas",
+        "coluna": "Base de Cálculo ICMS ST",
+        "operacao": "total"
+    },
+    {
+        "id": "total_icms_st_entradas",
+        "label": "Total ICMS ST Entradas",
+        "tipo": "soma_df",
+        "tipo_df": "entradas",
+        "coluna": "Total ICMS ST",
+        "operacao": "total"
+    },
+    {
+        "id": "total_contabil_saidas",
+        "label": "Total Contabil Saidas",
+        "tipo": "soma_df",
+        "tipo_df": "saidas",
+        "coluna": "Total Operação",
+        "operacao": "total"
+    },
+    {
+        "id": "total_base_icms_saidas",
+        "label": "Total Base ICMS Saidas",
+        "tipo": "soma_df",
+        "tipo_df": "saidas",
+        "coluna": "Base de Cálculo ICMS",
+        "operacao": "total"
+    },
+    {
+        "id": "total_debito_icms",
+        "label": "Total Debito ICMS",
+        "tipo": "soma_df",
+        "tipo_df": "saidas",
+        "coluna": "Total ICMS",
+        "operacao": "total"
+    },
+    {
+        "id": "total_debito_ipi",
+        "label": "Total Debito IPI",
+        "tipo": "soma_df",
+        "tipo_df": "saidas",
+        "coluna": "Total IPI",
+        "operacao": "total"
+    },
+    {
+        "id": "total_base_st_saidas",
+        "label": "Total Base ST Saidas",
+        "tipo": "soma_df",
+        "tipo_df": "saidas",
+        "coluna": "Base de Cálculo ICMS ST",
+        "operacao": "total"
+    },
+    {
+        "id": "total_icms_st_saidas",
+        "label": "Total ICMS ST Saidas",
+        "tipo": "soma_df",
+        "tipo_df": "saidas",
+        "coluna": "Total ICMS ST",
+        "operacao": "total"
+    },
+    {
+        "id": "venda_producao_5101_6101",
+        "label": "Venda Producao (5101/6101)",
+        "tipo": "soma_df",
+        "tipo_df": "saidas",
+        "coluna": "Total Operação",
+        "operacao": "cfop",
+        "cfops": [ "5101", "6101", "5103", "6103" ]
+    },
+    {
+        "id": "revenda_mercadoria_5102_6102",
+        "label": "Revenda Mercadoria (5102/6102)",
+        "tipo": "soma_df",
+        "tipo_df": "saidas",
+        "coluna": "Total Operação",
+        "operacao": "cfop",
+        "cfops": [ "5102", "6102" ]
+    },
+    {
+        "id": "venda_st_5403_5405",
+        "label": "Venda c/ ST (5403/5405)",
+        "tipo": "soma_df",
+        "tipo_df": "saidas",
+        "coluna": "Total Operação",
+        "operacao": "cfop",
+        "cfops": [ "5403", "5405", "6403", "6404" ]
+    },
+    {
+        "id": "outras_saidas_remessas_bonif",
+        "label": "Outras Saidas (Remessas/Bonif)",
+        "tipo": "soma_df",
+        "tipo_df": "saidas",
+        "coluna": "Total Operação",
+        "operacao": "cfop",
+        "cfops": [ "5910", "6910", "5949", "6949" ]
+    },
+    {
+        "id": "compra_industrializacao_1101_2101",
+        "label": "Compra p/ Industrializacao (1101/2101)",
+        "tipo": "soma_df",
+        "tipo_df": "entradas",
+        "coluna": "Total Operação",
+        "operacao": "cfop",
+        "cfops": [ "1101", "2101" ]
+    },
+    {
+        "id": "compra_comercializacao_1102_2102",
+        "label": "Compra p/ Comercializacao (1102/2102)",
+        "tipo": "soma_df",
+        "tipo_df": "entradas",
+        "coluna": "Total Operação",
+        "operacao": "cfop",
+        "cfops": [ "1102", "2102" ]
+    },
+    {
+        "id": "uso_consumo_1556_2556",
+        "label": "Uso e Consumo (1556/2556)",
+        "tipo": "soma_df",
+        "tipo_df": "entradas",
+        "coluna": "Total Operação",
+        "operacao": "cfop",
+        "cfops": [ "1556", "2556" ]
+    },
+    {
+        "id": "ativo_imobilizado_1551_2551",
+        "label": "Ativo Imobilizado (1551/2551)",
+        "tipo": "soma_df",
+        "tipo_df": "entradas",
+        "coluna": "Total Operação",
+        "operacao": "cfop",
+        "cfops": [ "1551", "2551" ]
+    },
+    {
+        "id": "compra_st_1403_2403",
+        "label": "Compra c/ ST (1403/2403)",
+        "tipo": "soma_df",
+        "tipo_df": "entradas",
+        "coluna": "Total Operação",
+        "operacao": "cfop",
+        "cfops": [ "1403", "2403" ]
+    },
+    {
+        "id": "devolucao_venda_1202_2202",
+        "label": "Devolucao de Venda (1202/2202)",
+        "tipo": "soma_df",
+        "tipo_df": "entradas",
+        "coluna": "Total Operação",
+        "operacao": "cfop",
+        "cfops": [ "1202", "2202" ]
+    },
+    {
+        "id": "icms_producao_propria",
+        "label": "ICMS da Producao Propria",
+        "tipo": "soma_df",
+        "tipo_df": "saidas",
+        "coluna": "Total ICMS",
+        "operacao": "cfop",
+        "cfops": [ "5101", "6101" ]
+    },
+    {
+        "id": "icms_revenda",
+        "label": "ICMS da Revenda",
+        "tipo": "soma_df",
+        "tipo_df": "saidas",
+        "coluna": "Total ICMS",
+        "operacao": "cfop",
+        "cfops": [ "5102", "6102" ]
+    },
+    {
+        "id": "icms_st_revenda_5405",
+        "label": "ICMS ST da Revenda (5405)",
+        "tipo": "soma_df",
+        "tipo_df": "saidas",
+        "coluna": "Total ICMS ST",
+        "operacao": "cfop",
+        "cfops": [ "5405" ]
+    },
+    {
+        "id": "apuracao_total_debito",
+        "label": "Total do Débito",
+        "tipo": "soma_celulas",
+        "ids_soma": [
+            "total_debito_icms"
+        ]
+    },
+    {
+        "id": "apuracao_total_credito",
+        "label": "Total do Crédito",
+        "tipo": "soma_celulas",
+        "ids_soma": [
+            "total_credito_icms"
+        ]
+    },
+    {
+        "id": "saldo_devedor_credor",
+        "label": "(=) Saldo do Devedor/Credor",
+        "tipo": "formula",
+        "formula_str": "apuracao_total_debito - apuracao_total_credito"
+    }
+]

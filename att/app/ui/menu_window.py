@@ -10,6 +10,7 @@ import typing
 
 from app.config import ConfigLoader
 from app.ui import empresa_cadastro_window
+from app.fiscal.template_generator import gerar_template_de_regras
 
 if typing.TYPE_CHECKING:
     try:
@@ -45,6 +46,10 @@ class MenuWindow:
             {
                 'key': '-FILTRO_SPED-', 'title': 'Filtro Sped', 'desc': 'Filtragem de arquivos SPED',
                 'permission': 'run_filtro_sped', 'icon': '🔍', 'tooltip': 'Filtra arquivos SPED Fiscal por período de datas para análise.'
+            },
+            {
+                'key': '-GERAR_TEMPLATE-', 'title': 'Gerar Template de Apuração', 'desc': 'Cria um arquivo Excel (.xlsx) a partir das regras de apuração',
+                'permission': 'admin', 'icon': '📝', 'tooltip': 'Gera um template de apuração em formato Excel (.xlsx) baseado nas regras definidas no sistema.'
             },
         ]
 
@@ -106,13 +111,37 @@ class MenuWindow:
             pad=(15, 15), tooltip=tooltip
         )
 
-    # <-- ALTERAÇÃO AQUI ---
-    # A lógica de hide/unhide foi ADICIONADA aqui.
     def _handle_click(self, event: str, controller: 'AppController') -> None: # type: ignore
         print(f"Handling event: {event}")
         if event is None: return
 
-        if event == self.empresas_card_def['key']:
+        if event == '-GERAR_TEMPLATE-':
+            try:
+                # Constrói o caminho para o arquivo de regras de forma robusta,
+                # baseando-se na localização deste próprio arquivo (menu_window.py).
+                # Isso funciona tanto em modo de desenvolvimento quanto no executável (PyInstaller).
+                # __file__ -> /path/to/att/app/ui/menu_window.py
+                # .parent -> /path/to/att/app/ui
+                # .parent -> /path/to/att/app
+                regras_path = Path(__file__).parent.parent / 'fiscal' / 'regras_apuracao.json'
+
+                save_path = sg.popup_get_file(
+                    'Salvar Template de Apuração',
+                    save_as=True,
+                    default_extension=".xlsx",
+                    file_types=(("Excel Files", "*.xlsx"),),
+                    no_window=True # Usa o diálogo de arquivo nativo do SO
+                )
+                if save_path:
+                    gerar_template_de_regras(str(regras_path), save_path)
+                    sg.popup_ok(f"Template gerado com sucesso em:\n{save_path}")
+
+            except FileNotFoundError:
+                 sg.popup_error(f"Arquivo de regras não encontrado no caminho esperado:\n{regras_path}.\n\nVerifique se o arquivo 'regras_apuracao.json' existe na pasta 'fiscal'.")
+            except Exception as e:
+                sg.popup_error(f"Ocorreu um erro ao gerar o template:\n{e}\n\n{traceback.format_exc()}")
+
+        elif event == self.empresas_card_def['key']:
             print("Button/Card clicked, launching tool: Gerenciar Empresas")
             current_window = self.window # Salva referência
             if current_window: current_window.hide()
@@ -125,7 +154,7 @@ class MenuWindow:
 
         elif event in self.ferramentas_map and event != self.empresas_card_def['key']:
             print(f"Button/Card clicked, launching tool via controller: {event}")
-            
+
             # --- Bloco de hide/unhide ADICIONADO ---
             current_window = self.window # Salva referência
             if current_window: current_window.hide()
@@ -135,7 +164,7 @@ class MenuWindow:
                  print(f"Erro retornado ao menu_window por _launch_tool: {e}")
                  sg.popup_error(f"Erro ao lançar ferramenta '{event}':\n{e}")
             finally:
-                 if current_window: 
+                 if current_window:
                     try:
                         current_window.un_hide()
                         current_window.bring_to_front()
@@ -145,7 +174,7 @@ class MenuWindow:
 
         elif event == '-LOGOUT-':
             print("Logout button event handled in run loop.")
-    # --- FIM DA ALTERAÇÃO ---
+
 
     def _build_layout(self) -> List[List[Element]]:
         font_family = self.config.font_family

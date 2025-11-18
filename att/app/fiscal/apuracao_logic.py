@@ -6,6 +6,7 @@ from openpyxl import load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
 from typing import Optional, Any, List, Union
 import FreeSimpleGUI as sg
+import json
 
 def _encontrar_celula(ws: Worksheet, texto_procurado: str) -> Optional[tuple[int, int]]:
     """
@@ -13,7 +14,7 @@ def _encontrar_celula(ws: Worksheet, texto_procurado: str) -> Optional[tuple[int
     """
     if texto_procurado is None: return None
     texto_limpo = str(texto_procurado).strip()
-    
+
     for row in ws.iter_rows():
         for cell in row:
             if cell.value is not None and str(cell.value).strip() == texto_limpo:
@@ -41,99 +42,81 @@ def somar_por_cfop(df: pd.DataFrame, cfops: Union[str, List[str]], coluna_valor:
     Filtra o DataFrame por uma lista de CFOPs e soma a coluna especificada.
     """
     if df.empty: return 0.0
-    
+
     lista_cfops = [cfops] if isinstance(cfops, str) else cfops
     # Converte para string para garantir match
     mask = df['CFOP (SPED)'].astype(str).isin(lista_cfops)
-    
+
     val = df[mask][coluna_valor].sum()
     return float(val)
 
 def preencher_template_apuracao(template_path: Path, df_entradas: pd.DataFrame, df_saidas: pd.DataFrame) -> None:
     """
-    Preenche o template com todos os campos disponíveis (Valor Contábil, BC ICMS, ICMS, BC ST, ST, IPI).
+    Preenche o template de apuração com base em uma lista de regras estruturadas.
     """
     logging.info(f"Iniciando preenchimento da apuração: {template_path.name}")
-    
+
     try:
         wb = load_workbook(template_path)
         ws = wb["Apuracao"] if "Apuracao" in wb.sheetnames else wb.active
     except Exception as e:
         logging.error(f"Erro ao carregar arquivo Excel: {e}"); raise
 
-    # ==============================================================================
-    # MAPEAMENTO COMPLETO
-    # Certifique-se que sua planilha tenha estes nomes na Coluna A
-    # ==============================================================================
-    mapa_valores = {
-        # --------------------------
-        # 1. ENTRADAS (Totais)
-        # --------------------------
-        "Total Contabil Entradas": df_entradas['Total Operação'].sum() if not df_entradas.empty else 0,
-        "Total Base ICMS Entradas": df_entradas['Base de Cálculo ICMS'].sum() if not df_entradas.empty else 0,
-        "Total Credito ICMS": df_entradas['Total ICMS'].sum() if not df_entradas.empty else 0,
-        "Total Credito IPI": df_entradas['Total IPI'].sum() if not df_entradas.empty else 0,
-        # ST nas Entradas (Antecipação/Substituto)
-        "Total Base ST Entradas": df_entradas['Base de Cálculo ICMS ST'].sum() if not df_entradas.empty else 0,
-        "Total ICMS ST Entradas": df_entradas['Total ICMS ST'].sum() if not df_entradas.empty else 0,
+    # Carrega as regras de apuração a partir do arquivo JSON externo.
+    try:
+        regras_path = Path(__file__).parent / "regras_apuracao.json"
+        with open(regras_path, 'r', encoding='utf-8') as f:
+            regras_apuracao = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        logging.error(f"Erro ao carregar o arquivo de regras 'regras_apuracao.json': {e}")
+        raise
 
-        # --------------------------
-        # 2. SAÍDAS (Totais)
-        # --------------------------
-        "Total Contabil Saidas": df_saidas['Total Operação'].sum() if not df_saidas.empty else 0,
-        "Total Base ICMS Saidas": df_saidas['Base de Cálculo ICMS'].sum() if not df_saidas.empty else 0,
-        "Total Debito ICMS": df_saidas['Total ICMS'].sum() if not df_saidas.empty else 0,
-        "Total Debito IPI": df_saidas['Total IPI'].sum() if not df_saidas.empty else 0,
-        # ST nas Saídas (Substituto)
-        "Total Base ST Saidas": df_saidas['Base de Cálculo ICMS ST'].sum() if not df_saidas.empty else 0,
-        "Total ICMS ST Saidas": df_saidas['Total ICMS ST'].sum() if not df_saidas.empty else 0,
+    resultados = {}
+    regras_por_id = {r['id']: r for r in regras_apuracao}
 
-        # --------------------------
-        # 3. DETALHAMENTO SAÍDAS (Por CFOP)
-        # --------------------------
-        # Venda Produção Própria (5101, 6101, 5103, 6103...)
-        "Venda Producao (5101/6101)": somar_por_cfop(df_saidas, ['5101', '6101', '5103', '6103'], 'Total Operação'),
-        
-        # Revenda Mercadoria (5102, 6102...)
-        "Revenda Mercadoria (5102/6102)": somar_por_cfop(df_saidas, ['5102', '6102'], 'Total Operação'),
-        
-        # Venda com ST (5403, 5405, 6403...)
-        "Venda c/ ST (5403/5405)": somar_por_cfop(df_saidas, ['5403', '5405', '6403', '6404'], 'Total Operação'),
-        
-        # Outras Saídas (Remessas, Bonificações - Ex: 5910, 5949)
-        "Outras Saidas (Remessas/Bonif)": somar_por_cfop(df_saidas, ['5910', '6910', '5949', '6949'], 'Total Operação'),
+    # --- PASSO 1: Calcular todas as regras do tipo 'soma_df' ---
+    regras_soma_df = [r for r in regras_apuracao if r.get('tipo') == 'soma_df']
+    for regra in regras_soma_df:
+        df_alvo = df_entradas if regra.get('tipo_df') == 'entradas' else df_saidas
+        valor = 0.0
 
-        # --------------------------
-        # 4. DETALHAMENTO ENTRADAS (Por CFOP)
-        # --------------------------
-        # Compra p/ Industrialização
-        "Compra p/ Industrializacao (1101/2101)": somar_por_cfop(df_entradas, ['1101', '2101'], 'Total Operação'),
-        
-        # Compra p/ Comercialização
-        "Compra p/ Comercializacao (1102/2102)": somar_por_cfop(df_entradas, ['1102', '2102'], 'Total Operação'),
-        
-        # Compra p/ Uso e Consumo
-        "Uso e Consumo (1556/2556)": somar_por_cfop(df_entradas, ['1556', '2556'], 'Total Operação'),
-        
-        # Compra Ativo Imobilizado
-        "Ativo Imobilizado (1551/2551)": somar_por_cfop(df_entradas, ['1551', '2551'], 'Total Operação'),
-        
-        # Compra com ST
-        "Compra c/ ST (1403/2403)": somar_por_cfop(df_entradas, ['1403', '2403'], 'Total Operação'),
-        
-        # Devolução de Venda (Entrada)
-        "Devolucao de Venda (1202/2202)": somar_por_cfop(df_entradas, ['1202', '2202'], 'Total Operação'),
+        if not df_alvo.empty:
+            if regra.get('operacao') == 'total':
+                valor = df_alvo[regra['coluna']].sum()
+            elif regra.get('operacao') == 'cfop':
+                valor = somar_por_cfop(df_alvo, regra.get('cfops', []), regra['coluna'])
 
-        # --------------------------
-        # 5. IMPOSTOS ESPECÍFICOS
-        # --------------------------
-        "ICMS da Producao Propria": somar_por_cfop(df_saidas, ['5101', '6101'], 'Total ICMS'),
-        "ICMS da Revenda": somar_por_cfop(df_saidas, ['5102', '6102'], 'Total ICMS'),
-        "ICMS ST da Revenda (5405)": somar_por_cfop(df_saidas, ['5405'], 'Total ICMS ST'),
-    }
+        resultados[regra['id']] = valor
 
-    for label, valor in mapa_valores.items():
-        _escrever_valor_adjacente(ws, label, valor)
+    # --- PASSO 2: Calcular regras 'soma_celulas' ---
+    regras_soma_celulas = [r for r in regras_apuracao if r.get('tipo') == 'soma_celulas']
+    for regra in regras_soma_celulas:
+        valor_total = 0.0
+        for id_soma in regra.get('ids_soma', []):
+            valor_total += resultados.get(id_soma, 0.0)
+        resultados[regra['id']] = valor_total
+
+    # --- PASSO 3: Calcular regras 'formula' ---
+    regras_formula = [r for r in regras_apuracao if r.get('tipo') == 'formula']
+    for regra in regras_formula:
+        formula_str = regra.get('formula_str', "")
+        # Substitui os IDs pelos seus valores no dicionário de resultados
+        for id_val, valor in resultados.items():
+            formula_str = formula_str.replace(id_val, str(valor))
+
+        try:
+            # Avalia a expressão matemática de forma segura
+            resultado_formula = eval(formula_str, {"__builtins__": None}, {})
+            resultados[regra['id']] = resultado_formula
+        except Exception as e:
+            logging.error(f"Erro ao calcular a fórmula para a regra '{regra['id']}': {e}")
+            resultados[regra['id']] = 0.0 # Define um valor padrão em caso de erro
+
+    # --- PASSO FINAL: Escrever todos os resultados na planilha ---
+    for id_regra, valor_calculado in resultados.items():
+        label = regras_por_id[id_regra].get('label')
+        if label:
+            _escrever_valor_adjacente(ws, label, valor_calculado)
 
     try:
         wb.save(template_path)
