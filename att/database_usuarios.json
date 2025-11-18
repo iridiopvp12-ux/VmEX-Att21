@@ -1,0 +1,21 @@
+{
+  "admin": {
+    "password": "$2b$12$9BkSXgCYlgPpSHy/4cd39ekZM43vX7iZIaonSDutFmvCb1/sGyAfa",
+    "permissions": [
+      "run_analysis",
+      "run_analysis_industrias",
+      "run_automation_lhs",
+      "run_filtro_sped",
+      "manage_users",
+      "view_logs",
+      "admin"
+    ]
+  },
+  "teste": {
+    "password": "$2b$12$dYwqkEbNXn.c9LB.28/4h.7hQhpHcFyce/U9nvu.oZgQn7imtm/5W",
+    "permissions": [
+      "run_analysis",
+      "run_analysis_industrias"
+    ]
+  }
+}

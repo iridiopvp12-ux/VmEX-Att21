@@ -1,0 +1,68 @@
+{
+  "SECURITY": {
+    "ADMIN_USER": "admin"
+  },
+  "LOGGING": {
+    "LOG_DIRECTORY_PATH": "\\\\srv-dc02\\Documentos\\contratos e alterações\\Fiscal\\Arquivos fiscais\\Logs Automatizador",
+    "LOG_LEVEL": "INFO"
+  },
+  "FISCAL_RULES": {
+    "TOLERANCIA_VALOR": 0.03,
+    "CFOP_SEM_CREDITO_ICMS": [
+      "1556", "2556", "1407", "2407", "1551", "2551", "1406", "2406",
+      "1403", "2403", "1653", "2653"
+    ],
+    "CFOP_SEM_CREDITO_IPI": [
+      "1102", "2102", "1403", "2403", "1556", "2556", "1407", "2407",
+      "1551", "2551", "1406", "2406", "1653", "2653"
+    ]
+  },
+  "UI_THEME": {
+    "THEME_NAME": "MassucattiModernDark",
+    "FONT_FAMILY": "Segoe UI",
+    "APP_ICON_NAME": "",
+    "BTN_COLORS": {
+      "main": {
+        "normal": "#007BFF",
+        "hover": "#009BFF",
+        "disabled": "#3E4A59"
+      },
+      "admin": {
+        "normal": "#17A2B8",
+        "hover": "#1BC5E0",
+        "disabled": "#3E4A59"
+      },
+      "exit": {
+        "normal": "#6C757D",
+        "hover": "#868E96",
+        "disabled": "#343A40"
+      },
+      "add": {
+        "normal": "#28A745",
+        "hover": "#2ECC71"
+      },
+      "delete": {
+        "normal": "#DC3545",
+        "hover": "#E74C3C"
+      }
+    },
+    "THEME_DEFINITION": {
+      "BACKGROUND": "#1E1E1E",
+      "TEXT": "#E0E0E0",
+      "INPUT": "#2C2C2C",
+      "TEXT_INPUT": "#E0E0E0",
+      "SCROLL": "#2C2C2C",
+      "BUTTON": [
+        "#FFFFFF",
+        "#007BFF"
+      ],
+      "PROGRESS": [
+        "#007BFF",
+        "#2C2C2C"
+      ],
+      "BORDER": 1,
+      "SLIDER_DEPTH": 0,
+      "PROGRESS_DEPTH": 0
+    }
+  }
+}
