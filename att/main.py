@@ -133,6 +133,18 @@ except ImportError as e:
 
 
 if __name__ == "__main__":
+    # --- Verificação de Domínio ---
+    allowed_domain = "MASSUCATTI"
+    user_domain = os.getenv("USERDOMAIN", "N/A").upper()
+
+    if user_domain != allowed_domain.upper():
+        sg.popup_error(
+            "Acesso não autorizado.\n\nEste aplicativo é de uso exclusivo na rede da empresa.",
+            title="Acesso Negado"
+        )
+        sys.exit(0)
+    # --- Fim da Verificação ---
+
     config = None # Define config no escopo mais amplo
     try:
         logging.info("Aplicação 'MeuAppFiscal' iniciada.")
